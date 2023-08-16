@@ -4,9 +4,7 @@ import { Formik } from 'formik'
 import * as yup from 'yup'
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
-import { registerUser } from './../features/auth/userSlice'
-import { loginUser } from './../features/auth/userSlice'
-import { toast } from 'react-toastify'
+import { loginUser, registerUser } from './../features/auth/userSlice'
 
 const Form = () => {
   const { token, user } = useSelector((store) => store.user)
@@ -22,11 +20,7 @@ const Form = () => {
   const registerSchema = yup.object().shape({
     // name: yup.string(),
     email: yup.string().email(),
-    password: yup.string(),
-    // .matches(
-    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-    //   'The password must contain uppercase, lowercase, numbers and special characters'
-    // )
+    password: yup.string().min(8),
     password_confirmation: yup
       .string()
       .label('confirm password')
@@ -56,15 +50,13 @@ const Form = () => {
   }
 
   // Handle submit
-  const handleFormSubmit = (values, props) => {
+  const handleFormSubmit = (values) => {
     if (isLogin) {
       dispatch(loginUser(values))
     }
 
     if (isRegister) {
       dispatch(registerUser(values))
-      props.resetForm()
-      setPageType('login')
     }
   }
 
