@@ -26,7 +26,7 @@ export const loginUser = createAsyncThunk(
       )
       return response.data
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.msg)
+      return thunkAPI.rejectWithValue(error.response.data.message)
     }
   }
 )
@@ -44,7 +44,7 @@ export const registerUser = createAsyncThunk(
       )
       return response.data
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.msg)
+      return thunkAPI.rejectWithValue(error.response.data.message)
     }
   }
 )
@@ -76,7 +76,6 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, { payload }) => {
         toast.error(payload)
-        alert(payload)
       })
       .addCase(registerUser.pending, (state, action) => {
         state.isLoading = true
