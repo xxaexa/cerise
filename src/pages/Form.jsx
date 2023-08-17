@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import { loginUser, registerUser } from './../features/auth/userSlice'
 
 const Form = () => {
-  const { token, user } = useSelector((store) => store.user)
+  const { user } = useSelector((store) => store.user)
   // configuration
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -62,12 +62,12 @@ const Form = () => {
 
   // Navigate to home
   useEffect(() => {
-    if (token || user) {
+    if (user) {
       setTimeout(() => {
         navigate('/home')
       }, 2000)
     }
-  }, [token, user])
+  }, [user])
 
   return (
     <div className="bg-custom">
@@ -93,16 +93,17 @@ const Form = () => {
                     onChange={handleChange}
                     error={errors.name}
                   />
+                  {/* Role Field*/}
+                  <FormRow
+                    name={'role_id'}
+                    type={'hidden'}
+                    placeholder={'role_id'}
+                    value={(values.role_id = 1)}
+                    onChange={handleChange}
+                    error={errors.role_id}
+                  />
                 </>
               )}
-              <FormRow
-                name={'role_id'}
-                type={'hidden'}
-                placeholder={'role_id'}
-                value={(values.role_id = 1)}
-                onChange={handleChange}
-                error={errors.role_id}
-              />
 
               {/* Email Field */}
               <FormRow

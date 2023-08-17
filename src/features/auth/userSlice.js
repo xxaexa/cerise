@@ -5,12 +5,12 @@ import {
   getUserFromLocalStorage,
 } from '../../utils/localStorage'
 import { toast } from 'react-toastify'
-import axios from 'axios'
+import customFetch from '../../utils/axios'
 
 const initialState = {
   isLoading: false,
   user: getUserFromLocalStorage(),
-  token: null,
+  token: '',
 }
 
 //Login User
@@ -18,12 +18,9 @@ export const loginUser = createAsyncThunk(
   'login/',
   async (values, thunkAPI) => {
     try {
-      const response = await axios.post(
-        'https://laravel-api-10.cerise.id/api/login',
-        {
-          ...values,
-        }
-      )
+      const response = await customFetch.post('/login', {
+        ...values,
+      })
       return response.data
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message)
@@ -36,12 +33,9 @@ export const registerUser = createAsyncThunk(
   'register/',
   async (values, thunkAPI) => {
     try {
-      const response = await axios.post(
-        'https://laravel-api-10.cerise.id/api/register',
-        {
-          ...values,
-        }
-      )
+      const response = await customFetch.post('/register', {
+        ...values,
+      })
       return response.data
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message)
@@ -49,32 +43,41 @@ export const registerUser = createAsyncThunk(
   }
 )
 
+//Logout User
+export const logoutUser = createAsyncThunk('logout/', async (_, thunkAPI) => {
+  try {
+    const response = await customFetch.post('/logout')
+    removeUserFromLocalStorage()
+    return response.data
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.message)
+  }
+})
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    logoutUser: (state, { payload }) => {
-      state.user = ''
-      state.token = null
-      removeUserFromLocalStorage()
-      if (payload) {
-        toast.success(payload)
-      }
-    },
-  },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state, action) => {
         state.isLoading = true
       })
       .addCase(loginUser.fulfilled, (state, { payload }) => {
-        const { user } = payload
         state.isLoading = false
-        state.token = payload.token
-        addUserToLocalStorage(user)
-        toast.success('Login Sukses')
+        state.user = payload
+        addUserToLocalStorage(payload)
+        toast.success('Login Success')
       })
       .addCase(loginUser.rejected, (state, { payload }) => {
+        toast.error(payload)
+      })
+      .addCase(logoutUser.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(logoutUser.fulfilled, (state, { payload }) => {
+        state.user = ''
+      })
+      .addCase(logoutUser.rejected, (state, { payload }) => {
         toast.error(payload)
       })
       .addCase(registerUser.pending, (state, action) => {
@@ -90,5 +93,5 @@ const userSlice = createSlice({
   },
 })
 
-export const { logoutUser } = userSlice.actions
+export const { removeUser } = userSlice.actions
 export default userSlice.reducer

@@ -3,8 +3,8 @@ import { Form, Home } from './pages'
 import { useSelector } from 'react-redux'
 
 const ProtectedRoute = ({ children }) => {
-  const { user, token } = useSelector((store) => store.user)
-  if (!user && !token) {
+  const { user } = useSelector((store) => store.user)
+  if (!user) {
     return <Navigate to="/" />
   }
   return children
